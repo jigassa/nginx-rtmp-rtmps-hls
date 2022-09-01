@@ -1,0 +1,72 @@
+ sudo apt-get update && sudo apt-get upgrade && sudo apt-get install nginx libnginx-mod-rtmp ffmpeg && sudo nano /etc/nginx/nginx.conf
+ 
+ # AGREGAR #
+ rtmp {
+	server {
+		listen 1935;
+		chunk_size 4096;
+
+		application live {
+			              	allow publish all;
+	#                			deny publish all;
+			              	allow play all;
+			              	live on;
+		              		record off;
+
+                      hls on;
+                      hls_path /srv/www;
+                      hls_fragment 6s;
+								      hls_playlist_length 10;
+                      #push rtmp://a.rtmp.youtube.com/live2/yj31-0vvm-qe1k-s9s6-3rxy;
+                      #push rtmp://127.0.0.1:1936/rtmp/<<Facebook persistent stream key>>;
+                                
+   #                   # Instagram
+   #                   exec ffmpeg -loop 1 -i /var/www/image.png -i rtmp://127.0.0.1:1935/live/$name -filter_complex "[1:v]scale=720:-1[fg];[0:v][fg]overlay=(W-w)/3:(H-h)/3:shortest=1" -c:v libx264 -preset veryfast -c:a aac -b:a 128k -f flv rtmp://127.0.0.1:1935/instagram;
+             }
+
+   # application instagram {
+   #                  live on;
+   #                  record off;
+   #                  push rtmp://127.0.0.1:1937/rtmp/REPLACE_WITH_KEY;
+             }
+
+			}
+		}
+	}     
+  
+  # HASTA ACA # 
+  
+  
+  
+  sudo apt-get install stunnel4 -y
+  sudo nano /etc/default/stunnel4
+  # ADD AL FINAL #
+  ENABLE=1
+  # END # 
+  
+  sudo nano /etc/stunnel/stunnel.conf
+  # ADD #
+  pid = /var/run/stunnel4/stunnel.pid
+  output = /var/log/stunnel4/stunnel.log
+
+  setuid = stunnel4
+  setgid = stunnel4
+
+  # https://www.stunnel.org/faq.html
+  socket = r:TCP_NODELAY=1
+  socket = l:TCP_NODELAY=1
+
+  debug = 4
+
+  [fb-live]
+  client = yes
+  accept = 1936
+  connect = live-api-s.facebook.com:443
+  verifyChain = no
+
+  # END #
+  
+  sudo systemctl enable stunnel4.service
+  sudo systemctl restart stunnel4.service
+  
+  
