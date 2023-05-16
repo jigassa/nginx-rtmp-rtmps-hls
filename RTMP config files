@@ -7,18 +7,18 @@
 		chunk_size 4096;
 
 		application live {
-			              	allow publish all;
-	#                			deny publish all;
-			              	allow play all;
-			              	live on;
-		              		record off;
+				allow publish all;
+				deny publish all;
+				allow play all;
+				live on;
+				record off;
 
-                      hls on;
-                      hls_path /srv/www;
-                      hls_fragment 6s;
-								      hls_playlist_length 10;
-                      #push rtmp://a.rtmp.youtube.com/live2/yj31-0vvm-qe1k-s9s6-3rxy;
-                      #push rtmp://127.0.0.1:1936/rtmp/<<Facebook persistent stream key>>;
+					hls on;
+					hls_path /srv/www;
+					hls_fragment 6s;
+					hls_playlist_length 10;
+					#push rtmp://a.rtmp.youtube.com/live2/yj31-0vvm-qe1k-s9s6-3rxy;
+					#push rtmp://127.0.0.1:1936/rtmp/<<Facebook persistent stream key>>;
                                 
    #                   # Instagram
    #                   exec ffmpeg -loop 1 -i /var/www/image.png -i rtmp://127.0.0.1:1935/live/$name -filter_complex "[1:v]scale=720:-1[fg];[0:v][fg]overlay=(W-w)/3:(H-h)/3:shortest=1" -c:v libx264 -preset veryfast -c:a aac -b:a 128k -f flv rtmp://127.0.0.1:1935/instagram;
